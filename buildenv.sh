@@ -2,13 +2,8 @@
 SCRIPT_FILENAME="`cd \`dirname \"$0\"\`; pwd`/`basename \"$0\"`"
 SCRIPT_ROOT=$(dirname "$SCRIPT_FILENAME")
 
-IMAGE_NAME="buildenv-ubuntu-stretch-qt5"
-
-if [ $(uname -m | grep arm | wc -l) -gt 0 ]; then
-        BASE_IMAGE_NAME=resin/raspberry-pi-debian:stretch
-else
-        BASE_IMAGE_NAME=debian:stretch
-fi
+[ -z "$BE_DEBIAN_VERSION" ] && BE_DEBIAN_VERSION=stretch
+IMAGE_NAME="buildenv-debian-${BE_DEBIAN_VERSION}-qt5"
 
 [[ -z "$1" || -z "$2" ]] && echo "$0 [workdir] [command] ..." && exit 1
 
@@ -45,7 +40,7 @@ cd "$SCRIPT_ROOT"
 
 set -e
 
-docker build -t "$IMAGE_NAME" docker --build-arg BASE_IMAGE_NAME=$BASE_IMAGE_NAME
+"$SCRIPT_ROOT/build-image.sh" "$IMAGE_NAME" "$BE_DEBIAN_VERSION"
 
 DOCKER_ADDITIONAL_PARAMS=""
 [ -t 1 ] && DOCKER_ADDITIONAL_PARAMS="-i"
