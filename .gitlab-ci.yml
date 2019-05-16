@@ -44,8 +44,8 @@ build-stretch-armv6l:
     - docker manifest push $IMAGE_TAG || true
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
     - export DOCKER_HUB_IMAGETAG="${IMAGE_TAG/$CI_REGISTRY\//}"
-    - docker tag $IMAGE_TAG $DOCKER_HUB_IMAGETAG
-    - docker push $DOCKER_HUB_IMAGETAG
+    - docker manifest create -a $DOCKER_HUB_IMAGETAG ${DOCKER_HUB_IMAGETAG}-amd64 ${DOCKER_HUB_IMAGETAG}-armv6l || true
+    - docker manifest push $DOCKER_HUB_IMAGETAG || true
     
 manifest-stretch:
   extends: .manifest
