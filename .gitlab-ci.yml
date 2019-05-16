@@ -8,13 +8,15 @@ before_script:
 .build:
   stage: build
   tags:
-  - shell-executor
-  - amd64
+    - shell-executor
+    - amd64
   script:
     - ./build-image.sh $IMAGE_TAG stretch
     - docker push $IMAGE_TAG
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
-    - docker push ${IMAGE_TAG/$CI_REGISTRY\//}
+    - export DOCKER_HUB_IMAGETAG="${IMAGE_TAG/$CI_REGISTRY\//}"
+    - docker tag $IMAGE_TAG $DOCKER_HUB_IMAGETAG
+    - docker push $DOCKER_HUB_IMAGETAG
 
 build-stretch-amd64:
   extends: .build
@@ -41,7 +43,9 @@ build-stretch-armv6l:
     - docker manifest create -a $IMAGE_TAG ${IMAGE_TAG}-amd64 ${IMAGE_TAG}-armv6l || true
     - docker manifest push $IMAGE_TAG || true
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
-    - docker push ${IMAGE_TAG/$CI_REGISTRY\//}
+    - export DOCKER_HUB_IMAGETAG="${IMAGE_TAG/$CI_REGISTRY\//}"
+    - docker tag $IMAGE_TAG $DOCKER_HUB_IMAGETAG
+    - docker push $DOCKER_HUB_IMAGETAG
     
 manifest-stretch:
   extends: .manifest
