@@ -1,9 +1,6 @@
 stages:
   - build
   - manifest
- 
-before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 .build:
   stage: build
@@ -11,11 +8,14 @@ before_script:
     - shell-executor
     - amd64
   script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - ./build-image.sh $IMAGE_TAG stretch
+    # Push to local registry...
     - docker push $IMAGE_TAG
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+    # Push to Docker Hub...
     - export DOCKER_HUB_IMAGETAG="${IMAGE_TAG/$CI_REGISTRY\//}"
     - docker tag $IMAGE_TAG $DOCKER_HUB_IMAGETAG
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
     - docker push $DOCKER_HUB_IMAGETAG
 
 build-stretch-amd64:
@@ -40,11 +40,16 @@ build-stretch-armv6l:
     DOCKER_CLI_EXPERIMENTAL: enabled
     IMAGE_TAG: $CI_REGISTRY_IMAGE:stretch
   script:
+    # Push manifest to local registry...
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker manifest create -a $IMAGE_TAG ${IMAGE_TAG}-amd64 ${IMAGE_TAG}-armv6l || true
+    - docker manifest annotate $IMAGE_TAG ${IMAGE_TAG}-armv6l --arch arm || true
     - docker manifest push $IMAGE_TAG || true
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+    # Push manifest to Docker Hub...
     - export DOCKER_HUB_IMAGETAG="${IMAGE_TAG/$CI_REGISTRY\//}"
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
     - docker manifest create -a $DOCKER_HUB_IMAGETAG ${DOCKER_HUB_IMAGETAG}-amd64 ${DOCKER_HUB_IMAGETAG}-armv6l || true
+    - docker manifest annotate $DOCKER_HUB_IMAGETAG ${DOCKER_HUB_IMAGETAG}-armv6l --arch arm || true
     - docker manifest push $DOCKER_HUB_IMAGETAG || true
     
 manifest-stretch:
