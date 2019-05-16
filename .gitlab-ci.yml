@@ -43,7 +43,7 @@ build-stretch-armv6l:
     # Push manifest to local registry...
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker manifest create -a $IMAGE_TAG ${IMAGE_TAG}-amd64 ${IMAGE_TAG}-armv6l || true
-    - docker manifest annotate $IMAGE_TAG ${IMAGE_TAG}-armv6l --arch arm || true
+    - docker manifest annotate $IMAGE_TAG ${IMAGE_TAG}-armv6l --arch armv6l || true
     - docker manifest push $IMAGE_TAG || true
     # Push manifest to Docker Hub...
     - export DOCKER_HUB_IMAGETAG="${IMAGE_TAG/$CI_REGISTRY\//}"
