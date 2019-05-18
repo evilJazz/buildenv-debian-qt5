@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 SCRIPT_FILENAME="`cd \`dirname \"$0\"\`; pwd`/`basename \"$0\"`"
 SCRIPT_ROOT=$(dirname "$SCRIPT_FILENAME")
 
@@ -20,7 +20,8 @@ function create_user_cmd()
     groupadd -f -g $GROUP_ID $CONTAINER_GROUPNAME '&&' \
     useradd -u $USER_ID -g $CONTAINER_GROUPNAME $CONTAINER_USERNAME '&&' \
     mkdir --parent $HOMEDIR '&&' \
-    chown -R $CONTAINER_USERNAME:$CONTAINER_GROUPNAME $HOMEDIR
+    chown -R $CONTAINER_USERNAME:$CONTAINER_GROUPNAME $HOMEDIR '&&' \
+    echo "$CONTAINER_USERNAME	ALL=\(ALL\) NOPASSWD:ALL" \>\> /etc/sudoers
 }
 
 function execute_as_cmd()
