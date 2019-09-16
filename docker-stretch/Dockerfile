@@ -14,3 +14,8 @@ RUN mkdir /workdir
 VOLUME /workdir
 
 VOLUME /home/buildenv
+
+COPY entrypoint.sh /
+#COPY startup.sh /
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
