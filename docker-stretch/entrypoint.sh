@@ -22,7 +22,7 @@ echo "Starting in /workdir where your working directory is attached..."
 cd /workdir
 
 if [ -n "$1" ]; then
-    sudo -u $CONTAINER_USERNAME HOME=$HOMEDIR "$@"
+    sudo -E -u $CONTAINER_USERNAME HOME=$HOMEDIR "$@"
 else
-    sudo -u $CONTAINER_USERNAME HOME=$HOMEDIR bash
+    sudo -E -u $CONTAINER_USERNAME HOME=$HOMEDIR bash
 fi
